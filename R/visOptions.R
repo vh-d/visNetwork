@@ -241,6 +241,7 @@ visOptions <- function(graph,
                        height = NULL,
                        highlightNearest = FALSE,
                        nodesIdSelection = FALSE,
+                       nodesFTSelection = FALSE,
                        selectedBy = NULL,
                        collapse = FALSE,
                        autoResize = NULL,
@@ -462,7 +463,42 @@ visOptions <- function(graph,
       #   }
       # }
     }
-    
+
+
+    # full-text query selection -----------------------------------------------
+    ftselection <-
+      list(
+        enabled = FALSE,
+        main = "Search query...",
+        style = 'width: 250px',
+        attrs = c("id", "label", "title")
+      )
+
+    if(is.list(nodesFTSelection)){
+      if(any(!names(nodesFTSelection)%in%c("enabled", "style", "value", "attrs", "main"))){
+        stop("Invalid 'nodesFTSelection' argument. List can have 'enabled', 'style', 'value', 'attrs', 'main'")
+      }
+      if("enabled"%in%names(nodesFTSelection)){
+        ftselection$enabled <- nodesFTSelection$enabled
+      }else{
+        ftselection$enabled <- TRUE
+      }
+
+    } else if(is.logical(nodesFTSelection)){
+      ftselection$enabled <- nodesFTSelection
+    } else{
+      stop("Invalid 'nodesFTSelection' argument")
+    }
+
+    if(ftselection$enabled){
+      if("attrs" %in% names(nodesFTSelection)){
+        ftselection$attrs <- nodesFTSelection$attrs
+        if(length(ftselection$attrs) == 1){
+          ftselection$attrs <- list(ftselection$attrs)
+        }
+      }
+    }
+
     #############################
     # nodesIdSelection
     #############################
@@ -665,11 +701,8 @@ visOptions <- function(graph,
     }
   }
   
-  # x <- list(highlight = highlightNearest, hoverNearest = hoverNearest, degree = degree, 
-  #           idselection = idselection, byselection = byselection)
-  
-  x <- list(highlight = highlight, idselection = idselection, byselection = byselection, collapse = list_collapse)
-  
+  x <- list(highlight = highlight, idselection = idselection, byselection = byselection, ftselection = ftselection, collapse = list_collapse)
+
   if(highlight$hoverNearest){
     graph <- visInteraction(graph, hover = TRUE)
   }
