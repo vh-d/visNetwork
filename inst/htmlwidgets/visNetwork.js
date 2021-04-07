@@ -1896,92 +1896,92 @@ if (HTMLWidgets.shinyMode){
 
             //reset nodes
             resetAllEdges(el.edges, el.highlightColor, el.byselectionColor, el.chart);
-            resetAllNodes(el.nodes, true, el.chart.groups, el.options, el.chart);
+              resetAllNodes(el.nodes, true, el.chart.groups, el.options, el.chart);
+              
+              if (main_el.selectActive === true){
+                main_el.selectActive = false;
+                resetList('selectedBy', data.id, 'selectedBy');
+              }
+              if (main_el.highlightActive === true){
+                main_el.highlightActive = false;
+                resetList('nodeSelect', data.id, 'selected');
+              }
+            }
+            // update nodes
+            el.nodes.update(tmpnodes);
             
-            if (main_el.selectActive === true){
-              main_el.selectActive = false;
-              resetList('selectedBy', data.id, 'selectedBy');
-            }
-            if (main_el.highlightActive === true){
-              main_el.highlightActive = false;
-              resetList('nodeSelect', data.id, 'selected');
-            }
-          }
-          // update nodes
-          el.nodes.update(tmpnodes);
-          
-          // update options ?
-          if(data.updateOptions){
-            var dataOptions = {};
-            dataOptions.options = {};
-          
-            var updateOpts = false;
-            if(document.getElementById("nodeSelect"+data.id).style.display === 'inline'){
-              updateOpts = true;
-              dataOptions.id  = data.id;
-              dataOptions.options.idselection = {enabled : true, useLabels : main_el.idselection_useLabels};
-            }
-      
-            if(document.getElementById("selectedBy"+data.id).style.display === 'inline'){
-              updateOpts = true;
-              dataOptions.id  = data.id;
-              dataOptions.options.byselection = {enabled : true, variable : main_el.byselection_variable, multiple : main_el.byselection_multiple};
-            }
-          
-            if(updateOpts){
-              updateVisOptions(dataOptions);
+            // update options ?
+            if(data.updateOptions){
+              var dataOptions = {};
+              dataOptions.options = {};
+            
+              var updateOpts = false;
+              if(document.getElementById("nodeSelect"+data.id).style.display === 'inline'){
+                updateOpts = true;
+                dataOptions.id  = data.id;
+                dataOptions.options.idselection = {enabled : true, useLabels : main_el.idselection_useLabels};
+              }
+        
+              if(document.getElementById("selectedBy"+data.id).style.display === 'inline'){
+                updateOpts = true;
+                dataOptions.id  = data.id;
+                dataOptions.options.byselection = {enabled : true, variable : main_el.byselection_variable, multiple : main_el.byselection_multiple};
+              }
+            
+              if(updateOpts){
+                updateVisOptions(dataOptions);
+              }
             }
           }
+        } else if(data.legend === true){
+          var legend_network = document.getElementById("legend"+data.id);
+          if(legend_network){
+            // get & transform nodes object
+            var tmpnodes = visNetworkdataframeToD3(data.nodes, "nodes");
+            // update nodes
+            legend_network.network.body.data.nodes.update(tmpnodes);
+            // fit
+            legend_network.network.fit();
+          }
         }
-      } else if(data.legend === true){
-        var legend_network = document.getElementById("legend"+data.id);
-        if(legend_network){
-          // get & transform nodes object
-          var tmpnodes = visNetworkdataframeToD3(data.nodes, "nodes");
-          // update nodes
-          legend_network.network.body.data.nodes.update(tmpnodes);
-          // fit
-          legend_network.network.fit();
-        }
-      }
-  });
+    });
 
-  // udpate edges data
-  Shiny.addCustomMessageHandler('visShinyUpdateEdges', function(data){
-      // get container id
-      var el = document.getElementById("graph"+data.id);
-      if(data.legend === false){
-        if(el){
-          // get edges object
-          var tmpedges = visNetworkdataframeToD3(data.edges, "edges");
-          // reset edges
-          resetAllEdges(el.edges, el.highlightColor,  el.byselectionColor, el.chart)
-          el.edges.update(tmpedges);
+    // udpate edges data
+    Shiny.addCustomMessageHandler('visShinyUpdateEdges', function(data){
+        // get container id
+        var el = document.getElementById("graph"+data.id);
+        if(data.legend === false){
+          if(el){
+            // get edges object
+            var tmpedges = visNetworkdataframeToD3(data.edges, "edges");
+            // reset edges
+            resetAllEdges(el.edges, el.highlightColor,  el.byselectionColor, el.chart)
+            el.edges.update(tmpedges);
+          }
+        } else if(data.legend === true){
+          var legend_network = document.getElementById("legend"+data.id);
+          if(legend_network){
+            // get & transform nodes object
+            var tmpedges = visNetworkdataframeToD3(data.edges, "edges");
+            // update edges
+            legend_network.network.body.data.edges.update(tmpedges);
+            // fit
+            legend_network.network.fit();
+          }
         }
-      } else if(data.legend === true){
-        var legend_network = document.getElementById("legend"+data.id);
-        if(legend_network){
-          // get & transform nodes object
-          var tmpedges = visNetworkdataframeToD3(data.edges, "edges");
-          // update edges
-          legend_network.network.body.data.edges.update(tmpedges);
-          // fit
-          legend_network.network.fit();
-        }
-      }
-  });
-  
-  // remove nodes
-  Shiny.addCustomMessageHandler('visShinyRemoveNodes', function(data){
-      // get container id
-      var el = document.getElementById("graph"+data.id);
-      var main_el = document.getElementById(data.id);
-      if(data.legend === false){
-        if(el){
-          // reset some parameters / date before
-          if (main_el.selectActive === true | main_el.highlightActive === true) {
-            //reset nodes
-            resetAllNodes(el.nodes, true, el.chart.groups, el.options, el.chart);
+    });
+    
+    // remove nodes
+    Shiny.addCustomMessageHandler('visShinyRemoveNodes', function(data){
+        // get container id
+        var el = document.getElementById("graph"+data.id);
+        var main_el = document.getElementById(data.id);
+        if(data.legend === false){
+          if(el){
+            // reset some parameters / date before
+            if (main_el.selectActive === true | main_el.highlightActive === true) {
+              //reset nodes
+              resetAllNodes(el.nodes, true, el.chart.groups, el.options, el.chart);
             
             if (main_el.selectActive === true){
               main_el.selectActive = false;
@@ -2412,34 +2412,42 @@ HTMLWidgets.widget({
     //*************************
     //fulltext selection
     //*************************
+    function selectedAndHighlight(ids) {
+      instance.network.selectNodes(ids);
+      if(el_id.highlight){
+        neighbourhoodHighlight(instance.network.getSelection().nodes, "click", el_id.highlightAlgorithm, true);
+      }
+    }    
 
     function searchNode(searchtext, searchfield, modifier = 'i') {
-        if (searchtext == "") {
-          instance.network.unselectAll();
-          if (el_id.dataviewer) displayInDataViewer([])
-          return null;
-        }
-
-        let query = new RegExp(searchtext, modifier)
-        const match = nodes.map(function(x) {
-          if (query.test(x[searchfield])) {return(x.id)} else return(null)
-        }).filter(x => x !== null)
-        //alert(JSON.stringify(match))
-        if (match.length > 0) {
+      if (searchtext == "") {
+        instance.network.unselectAll();
+        if (el_id.dataviewer) displayInDataViewer([])
+        return null;
+      }
+      
+      let query = new RegExp(searchtext, modifier)
+      const match = nodes.map(function(x) {
+        if (query.test(x[searchfield])) {return(x.id)} else return(null)
+      }).filter(x => x !== null)
+      //alert(JSON.stringify(match))
+      if (match.length > 0) {
         try {
-            instance.network.selectNodes(match)
-            if (el_id.dataviewer) {
-              displayInDataViewer(match)
-            }
-            // document.getElementById("sourcecode").innerHTML = match.map(i => i.title).join("<br><br>")
+          selectedAndHighlight(match)
+          // instance.network.selectNodes(match)
+          if (el_id.dataviewer) {
+            displayInDataViewer(match)
+          }
+          // document.getElementById("sourcecode").innerHTML = match.map(i => i.title).join("<br><br>")
         } catch {
-
-        } } else {
-            instance.network.selectNodes([])
-            // document.getElementById("sourcecode").innerHTML = ""
+          
+        } 
+      } else {
+          instance.network.selectNodes([])
+          // document.getElementById("sourcecode").innerHTML = ""
         }
     }
-
+      
     var ftQueryInput = document.createElement("input");
     ftQueryInput.id = "ftQueryInput"+el.id;
     ftQueryInput.setAttribute('type', 'search');
@@ -2473,11 +2481,11 @@ HTMLWidgets.widget({
     if (el_id.ftselection) {
       ftQueryInput.style.display = 'inline';
       //ftQueryList.style.display = 'inline';
-      for (const val of x.ftselection.attrs) {
+      for (const val of x.ftselection.fields) {
         var option = document.createElement("option");
         option.value = val;
         option.text = val;
-        if (val == "definition") option.selected = true;
+        if (val == x.ftselection.defaultField) option.selected = true;
         ftQueryList.appendChild(option);
       }
     }
@@ -3847,9 +3855,10 @@ HTMLWidgets.widget({
     });
     
     instance.network.on("selectNode", function(params){
-        if (el_id.dataviewer) {
-          displayInDataViewer(params["nodes"])
-        }   
+      onIdChange(params.nodes[0], false);
+      if (el_id.dataviewer) {
+        displayInDataViewer(params["nodes"])
+      }
     });
 
     instance.network.on("hoverNode", function(params){
@@ -3890,17 +3899,19 @@ HTMLWidgets.widget({
         // obtain node referenct
         ii = nodes._getItem(i);
         var nodeHeaderCont = document.createElement("div");
-        var nodeheader = document.createElement("pre");
+        var nodeheader = document.createElement("figcaption");
         nodeheader.innerHTML = "".concat(i, " - ", ii["label"]);
-        nodeheader.style.cursor = "pointer";
+        nodeheader.style = "margin: 0; cursor: pointer; font-size: 0.9em";
         nodeheader.onclick = function() {
-          instance.network.unselectAll();
-          instance.network.selectNodes([i])
+          onIdChange(i, false)
         };
         nodeHeaderCont.appendChild(nodeheader)
+        nodeHeaderCont.style = "padding-top: 5px; margin-bottom: 0; margin-top: 0";
         nodeHeaderCont.style.backgroundColor = 'rgba(200,200,200,0.8)';
-        nodeHeaderCont.style.borderTopStyle = '1px';
-        nodeHeaderCont.style.paddingTop = '5px';
+        nodeHeaderCont.style.border = '0px';
+        nodeHeaderCont.style.borderTop = '1px';
+        nodeHeaderCont.style.borderStyle = 'solid'; 
+        nodeHeaderCont.style.borderColor = 'black';
         dataViewerEl.appendChild(nodeHeaderCont);
         // prepare elements
         // codeViewerPre = document.createElement("pre");
@@ -3942,11 +3953,11 @@ HTMLWidgets.widget({
       dataViewerCont.style.height = el_id.style.height; // align with network height
 
       // set up dropdown selection menu
-      for (const val of x.dataviewer.attrs) {
+      for (const val of x.dataviewer.fields) {
         var option = document.createElement("option");
         option.value = val;
         option.text = val;
-        if (val == "definition") option.selected = true;
+        if (val == x.dataviewer.defaultField) option.selected = true;
         dataViewerList.appendChild(option);
       }
       dataViewerCont.appendChild(dataViewerList);

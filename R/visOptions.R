@@ -472,14 +472,15 @@ visOptions <- function(graph,
         enabled = FALSE,
         main = "Search query...",
         style = 'width: 250px',
-        attrs = colnames(graph$x$nodes) #c("id", "label", "title")
+        fields = colnames(graph$x$nodes), #c("id", "label", "title")
+        defaultField = "id"
       )
 
     #############################
     # nodesFTSelection
     #############################   
     if(is.list(nodesFTSelection)){
-      if(any(!names(nodesFTSelection)%in%c("enabled", "style", "value", "attrs", "main"))){
+      if(any(!names(nodesFTSelection)%in%c("enabled", "style", "value", "fields", "defaultField", "main"))){
         stop("Invalid 'nodesFTSelection' argument. List can have 'enabled', 'style', 'value', 'attrs', 'main'")
       }
       if("enabled"%in%names(nodesFTSelection)){
@@ -487,7 +488,9 @@ visOptions <- function(graph,
       }else{
         ftselection$enabled <- TRUE
       }
-
+      if("defaultField"%in%names(nodesFTSelection)){
+        ftselection$defaultField <- nodesFTSelection$defaultField
+      }      
     } else if(is.logical(nodesFTSelection)){
       ftselection$enabled <- nodesFTSelection
     } else{
@@ -513,11 +516,12 @@ visOptions <- function(graph,
         enabled = FALSE,
         main = "Search query...",
         style = 'width: 250px',
-        attrs = colnames(graph$x$nodes) #c("id", "label", "title")
+        fields = colnames(graph$x$nodes), #c("id", "label", "title")
+        defaultField = "id" 
       )
 
     if(is.list(dataViewer)){
-      if(any(!names(dataviewer)%in%c("enabled", "style", "value", "attrs", "main"))){
+      if(any(!names(dataviewer)%in%c("enabled", "style", "value", "fields", "defaultField", "main"))){
         stop("Invalid 'nodesFTSelection' argument. List can have 'enabled', 'style', 'value', 'attrs', 'main'")
       }
       if("enabled"%in%names(dataViewer)){
@@ -525,7 +529,9 @@ visOptions <- function(graph,
       }else{
         dataviewer$enabled <- TRUE
       }
-      
+      if("defaultField"%in%names(dataViewer)){
+        dataviewer$defaultField <- dataViewer$defaultField
+      }      
     } else if(is.logical(dataViewer)){
       dataviewer$enabled <- dataViewer
     } else{
