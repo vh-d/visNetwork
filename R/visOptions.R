@@ -513,7 +513,7 @@ visOptions <- function(graph,
         enabled = FALSE,
         main = "Search query...",
         style = 'width: 250px',
-        attrs = c("id", "label", "title")
+        attrs = colnames(graph$x$nodes) #c("id", "label", "title")
       )
 
     if(is.list(dataViewer)){

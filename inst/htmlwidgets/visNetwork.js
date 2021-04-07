@@ -2442,7 +2442,7 @@ HTMLWidgets.widget({
 
     var ftQueryInput = document.createElement("input");
     ftQueryInput.id = "ftQueryInput"+el.id;
-    ftQueryInput.setAttribute('type', 'text');
+    ftQueryInput.setAttribute('type', 'search');
     ftQueryInput.style = x.ftselection.style;
     ftQueryInput.style.display = 'none';
     ftQueryInput.setAttribute('placeholder', x.ftselection.main);
@@ -2454,7 +2454,7 @@ HTMLWidgets.widget({
     //ftQueryList.style.display = 'none';
     el_id.appendChild(ftQueryList);
 
-    ftQueryInput.oninput = function() {
+    ftQueryInput.onchange = function() {
       if (instance.network){
         searchNode(ftQueryInput.value, ftQueryList.value);
       }
@@ -2524,7 +2524,7 @@ HTMLWidgets.widget({
     // divide page
     var maindiv  = document.createElement('div');
     maindiv.id = "maindiv"+el.id;
-    maindiv.setAttribute('style', 'height:75%;background-color: inherit;');
+    maindiv.setAttribute('style', 'height:95%;background-color: inherit;');
     el_id.appendChild(maindiv);
 
     var graph = document.createElement('div');
@@ -3889,26 +3889,75 @@ HTMLWidgets.widget({
       ns.forEach(function(i) {
         // obtain node referenct
         ii = nodes._getItem(i);
+        var nodeHeaderCont = document.createElement("div");
+        var nodeheader = document.createElement("pre");
+        nodeheader.innerHTML = "".concat(i, " - ", ii["label"]);
+        nodeheader.style.cursor = "pointer";
+        nodeheader.onclick = function() {
+          instance.network.unselectAll();
+          instance.network.selectNodes([i])
+        };
+        nodeHeaderCont.appendChild(nodeheader)
+        nodeHeaderCont.style.backgroundColor = 'rgba(200,200,200,0.8)';
+        nodeHeaderCont.style.borderTopStyle = '1px';
+        nodeHeaderCont.style.paddingTop = '5px';
+        dataViewerEl.appendChild(nodeHeaderCont);
         // prepare elements
-        codeViewerPre = document.createElement("pre");
-        codeViewerCode = document.createElement("code");
+        // codeViewerPre = document.createElement("pre");
+        // codeViewerCode = document.createElement("code");
         // insert value
-        codeViewerCode.innerHTML = ii[ftQueryList.value];
-        codeViewerCode.setAttribute("class", "language-r");
-        codeViewerPre.appendChild(codeViewerCode);
-        dataViewerEl.appendChild(codeViewerPre);
+        var content = document.createElement("div")
+        content.innerHTML = ii[dataViewerList.value];
+        dataViewerEl.appendChild(content) 
+        // codeViewerCode.setAttribute("class", "language-r");
+        
+        // codeViewerPre.appendChild(codeViewerCode);
+        // dataViewerEl.appendChild(codeViewerPre);
+        //adjust size
+        // codeViewerCode.style = "overflow: scroll; max-height: 100px";
         // highlight
-        Prism.highlightAllUnder(dataViewerEl);
       })
+      Prism.highlightAllUnder(dataViewerEl);
     }
+
+    var dataViewerCont = document.createElement("div")
+    dataViewerCont.id = "dataViewerCont"+el.id;
 
     var dataViewerEl = document.createElement("div")
     dataViewerEl.id = "dataViewer"+el.id;
+
+    var dataViewerList = document.createElement("select");
+    dataViewerList.id = "dataViewerList"+el.id;
+    dataViewerList.setAttribute('class', 'dropdown');
+    
+    dataViewerList.onchange =  function() {
+      if (instance.network){
+        displayInDataViewer(instance.network.getSelectedNodes(), dataViewerList.value)
+      }
+    };
+
     if (el_id.dataviewer) {
-      dataViewerEl.setAttribute('style', 'height: 100%; width: 35%; resize: both; background-color: inherit; border: 1px; border-style: solid; border-color: grey; overflow: scroll');
+      
+      dataViewerCont.setAttribute('style', 'width: 35%; resize: both; background-color: inherit;');
+      dataViewerCont.style.height = el_id.style.height; // align with network height
+
+      // set up dropdown selection menu
+      for (const val of x.dataviewer.attrs) {
+        var option = document.createElement("option");
+        option.value = val;
+        option.text = val;
+        if (val == "definition") option.selected = true;
+        dataViewerList.appendChild(option);
+      }
+      dataViewerCont.appendChild(dataViewerList);
+      
+      // set up main data viewer element
+      dataViewerEl.setAttribute('style', 'height: 100%; border: 1px; border-style: solid; border-color: grey; overflow: scroll; background-color: rgba(200,200,200,0.6)');
+      dataViewerCont.appendChild(dataViewerEl);
+      
       el_id.parentElement.style = "display: flex";
       el_id.resize = "both";
-      el_id.parentElement.appendChild(dataViewerEl);
+      el_id.parentElement.appendChild(dataViewerCont);
     }
 
     //*************************
