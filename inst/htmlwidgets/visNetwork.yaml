@@ -4,3 +4,8 @@ dependencies:
     src: htmlwidgets/lib/vis
     script: vis-network.min.js
     stylesheet: vis-network.min.css
+  - name: prism
+    version: 1.23
+    src: htmlwidgets/lib/prism
+    script: prism.js
+    stylesheet: prism.css

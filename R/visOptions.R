@@ -242,6 +242,7 @@ visOptions <- function(graph,
                        highlightNearest = FALSE,
                        nodesIdSelection = FALSE,
                        nodesFTSelection = FALSE,
+                       dataViewer = FALSE,
                        selectedBy = NULL,
                        collapse = FALSE,
                        autoResize = NULL,
@@ -471,9 +472,12 @@ visOptions <- function(graph,
         enabled = FALSE,
         main = "Search query...",
         style = 'width: 250px',
-        attrs = c("id", "label", "title")
+        attrs = colnames(graph$x$nodes) #c("id", "label", "title")
       )
 
+    #############################
+    # nodesFTSelection
+    #############################   
     if(is.list(nodesFTSelection)){
       if(any(!names(nodesFTSelection)%in%c("enabled", "style", "value", "attrs", "main"))){
         stop("Invalid 'nodesFTSelection' argument. List can have 'enabled', 'style', 'value', 'attrs', 'main'")
@@ -495,6 +499,44 @@ visOptions <- function(graph,
         ftselection$attrs <- nodesFTSelection$attrs
         if(length(ftselection$attrs) == 1){
           ftselection$attrs <- list(ftselection$attrs)
+        }
+      }
+    }
+    
+    
+    #############################
+    # dataviewer
+    #############################
+    # data viewer -----------------------------------------------
+    dataviewer <-
+      list(
+        enabled = FALSE,
+        main = "Search query...",
+        style = 'width: 250px',
+        attrs = c("id", "label", "title")
+      )
+
+    if(is.list(dataViewer)){
+      if(any(!names(dataviewer)%in%c("enabled", "style", "value", "attrs", "main"))){
+        stop("Invalid 'nodesFTSelection' argument. List can have 'enabled', 'style', 'value', 'attrs', 'main'")
+      }
+      if("enabled"%in%names(dataViewer)){
+        dataviewer$enabled <- dataViewer$enabled
+      }else{
+        dataviewer$enabled <- TRUE
+      }
+      
+    } else if(is.logical(dataViewer)){
+      dataviewer$enabled <- dataViewer
+    } else{
+      stop("Invalid 'dataViewer' argument")
+    }
+    
+    if(dataviewer$enabled){
+      if("attrs" %in% names(dataViewer)){
+        dataviewer$attrs <- dataViewer$attrs
+        if(length(dataviewer$attrs) == 1){
+          dataviewer$attrs <- list(dataviewer$attrs)
         }
       }
     }
@@ -701,7 +743,14 @@ visOptions <- function(graph,
     }
   }
   
-  x <- list(highlight = highlight, idselection = idselection, byselection = byselection, ftselection = ftselection, collapse = list_collapse)
+  x <- list(
+    highlight = highlight, 
+    idselection = idselection,
+    byselection = byselection, 
+    ftselection = ftselection, 
+    dataviewer = dataviewer, 
+    collapse = list_collapse
+  )
 
   if(highlight$hoverNearest){
     graph <- visInteraction(graph, hover = TRUE)

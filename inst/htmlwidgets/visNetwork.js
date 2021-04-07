@@ -2197,6 +2197,7 @@ HTMLWidgets.widget({
     el_id.idselection = x.idselection.enabled;
     el_id.byselection = x.byselection.enabled;
     el_id.ftselection = x.ftselection.enabled;
+    el_id.dataviewer = x.dataviewer.enabled;
 
     if(x.highlight !== undefined){
       el_id.highlight = x.highlight.enabled;
@@ -2413,6 +2414,12 @@ HTMLWidgets.widget({
     //*************************
 
     function searchNode(searchtext, searchfield, modifier = 'i') {
+        if (searchtext == "") {
+          instance.network.unselectAll();
+          if (el_id.dataviewer) displayInDataViewer([])
+          return null;
+        }
+
         let query = new RegExp(searchtext, modifier)
         const match = nodes.map(function(x) {
           if (query.test(x[searchfield])) {return(x.id)} else return(null)
@@ -2421,6 +2428,9 @@ HTMLWidgets.widget({
         if (match.length > 0) {
         try {
             instance.network.selectNodes(match)
+            if (el_id.dataviewer) {
+              displayInDataViewer(match)
+            }
             // document.getElementById("sourcecode").innerHTML = match.map(i => i.title).join("<br><br>")
         } catch {
 
@@ -2430,7 +2440,6 @@ HTMLWidgets.widget({
         }
     }
 
-    // actually only with nodes + edges data (not dot and gephi)
     var ftQueryInput = document.createElement("input");
     ftQueryInput.id = "ftQueryInput"+el.id;
     ftQueryInput.setAttribute('type', 'text');
@@ -2447,13 +2456,13 @@ HTMLWidgets.widget({
 
     ftQueryInput.oninput = function() {
       if (instance.network){
-        searchNode(document.getElementById("ftQueryInput"+el.id).value, document.getElementById("ftQueryList"+el.id).value);
+        searchNode(ftQueryInput.value, ftQueryList.value);
       }
     };
 
     ftQueryList.onchange =  function() {
       if (instance.network){
-        searchNode(document.getElementById("ftQueryInput"+el.id).value, document.getElementById("ftQueryList"+el.id).value);
+        searchNode(ftQueryInput.value, ftQueryList.value);
       }
     };
 
@@ -2468,6 +2477,7 @@ HTMLWidgets.widget({
         var option = document.createElement("option");
         option.value = val;
         option.text = val;
+        if (val == "definition") option.selected = true;
         ftQueryList.appendChild(option);
       }
     }
@@ -2514,7 +2524,7 @@ HTMLWidgets.widget({
     // divide page
     var maindiv  = document.createElement('div');
     maindiv.id = "maindiv"+el.id;
-    maindiv.setAttribute('style', 'height:95%;background-color: inherit;');
+    maindiv.setAttribute('style', 'height:75%;background-color: inherit;');
     el_id.appendChild(maindiv);
 
     var graph = document.createElement('div');
@@ -3835,6 +3845,12 @@ HTMLWidgets.widget({
           onClickIDSelection(params)
         }
     });
+    
+    instance.network.on("selectNode", function(params){
+        if (el_id.dataviewer) {
+          displayInDataViewer(params["nodes"])
+        }   
+    });
 
     instance.network.on("hoverNode", function(params){
       if(el_id.hoverNearest && x.nodes){
@@ -3861,6 +3877,38 @@ HTMLWidgets.widget({
 
     if(el_id.collapse){
       instance.network.on("doubleClick", networkOpenCluster);
+    }
+
+    //*************************
+    //dataviewer
+    //*************************
+    function displayInDataViewer(ns) {
+      dataViewerEl.innerHTML = '';
+      //for (i = nodes._getItem(params["nodes"])) //nodes.find(el => el.id == params["nodes"][0])
+      // dataViewerEl.innerHTML = i.title //+ "<br>" + JSON.stringify(params)
+      ns.forEach(function(i) {
+        // obtain node referenct
+        ii = nodes._getItem(i);
+        // prepare elements
+        codeViewerPre = document.createElement("pre");
+        codeViewerCode = document.createElement("code");
+        // insert value
+        codeViewerCode.innerHTML = ii[ftQueryList.value];
+        codeViewerCode.setAttribute("class", "language-r");
+        codeViewerPre.appendChild(codeViewerCode);
+        dataViewerEl.appendChild(codeViewerPre);
+        // highlight
+        Prism.highlightAllUnder(dataViewerEl);
+      })
+    }
+
+    var dataViewerEl = document.createElement("div")
+    dataViewerEl.id = "dataViewer"+el.id;
+    if (el_id.dataviewer) {
+      dataViewerEl.setAttribute('style', 'height: 100%; width: 35%; resize: both; background-color: inherit; border: 1px; border-style: solid; border-color: grey; overflow: scroll');
+      el_id.parentElement.style = "display: flex";
+      el_id.resize = "both";
+      el_id.parentElement.appendChild(dataViewerEl);
     }
 
     //*************************
