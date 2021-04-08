@@ -2412,13 +2412,13 @@ HTMLWidgets.widget({
     //*************************
     //fulltext selection
     //*************************
-    function selectedAndHighlight(ids) {
+    function selectAndHighlight(ids) {
       instance.network.selectNodes(ids);
       if(el_id.highlight){
         neighbourhoodHighlight(instance.network.getSelection().nodes, "click", el_id.highlightAlgorithm, true);
       }
     }    
-
+    
     function searchNode(searchtext, searchfield, modifier = 'i') {
       if (searchtext == "") {
         instance.network.unselectAll();
@@ -2433,21 +2433,22 @@ HTMLWidgets.widget({
       //alert(JSON.stringify(match))
       if (match.length > 0) {
         try {
-          selectedAndHighlight(match)
+          match.reverse();
+          selectAndHighlight(match);
           // instance.network.selectNodes(match)
           if (el_id.dataviewer) {
-            displayInDataViewer(match)
+            displayInDataViewer(match, highlight = query);
           }
           // document.getElementById("sourcecode").innerHTML = match.map(i => i.title).join("<br><br>")
         } catch {
           
         } 
       } else {
-          instance.network.selectNodes([])
-          // document.getElementById("sourcecode").innerHTML = ""
-        }
+        instance.network.selectNodes([]);
+        // document.getElementById("sourcecode").innerHTML = ""
+      }
     }
-      
+    
     var ftQueryInput = document.createElement("input");
     ftQueryInput.id = "ftQueryInput"+el.id;
     ftQueryInput.setAttribute('type', 'search');
@@ -3891,16 +3892,17 @@ HTMLWidgets.widget({
     //*************************
     //dataviewer
     //*************************
-    function displayInDataViewer(ns) {
+    function displayInDataViewer(ns, highlight = null) {
       dataViewerEl.innerHTML = '';
       //for (i = nodes._getItem(params["nodes"])) //nodes.find(el => el.id == params["nodes"][0])
       // dataViewerEl.innerHTML = i.title //+ "<br>" + JSON.stringify(params)
       ns.forEach(function(i) {
         // obtain node referenct
         ii = nodes._getItem(i);
+
         var nodeHeaderCont = document.createElement("div");
         var nodeheader = document.createElement("figcaption");
-        nodeheader.innerHTML = "".concat(i, " - ", ii["label"]);
+        nodeheader.innerHTML = "".concat(i, " - ", ii["title"]);
         nodeheader.style = "margin: 0; cursor: pointer; font-size: 0.9em";
         nodeheader.onclick = function() {
           onIdChange(i, false)
@@ -3917,9 +3919,18 @@ HTMLWidgets.widget({
         // codeViewerPre = document.createElement("pre");
         // codeViewerCode = document.createElement("code");
         // insert value
+        
         var content = document.createElement("div")
         content.innerHTML = ii[dataViewerList.value];
-        dataViewerEl.appendChild(content) 
+
+        if (highlight !== null && (highlight instanceof RegExp)) {
+          const lines = ii[dataViewerList.value].split("\n");
+          const linesToHighlight = lines.map(function(value, index) {return highlight.test(value)?(index+1):-1}).filter(x => x >= 0).join();
+          //content.childNodes.find(x => x.className.substring(1, 8) === "language").forEach(x => x.setAttribute("data-line", linesToHighlight));
+          content.childNodes.forEach(function(x) {if (x.tagName === "PRE") x.setAttribute("data-line", linesToHighlight)})
+        }
+        
+        dataViewerEl.appendChild(content)
         // codeViewerCode.setAttribute("class", "language-r");
         
         // codeViewerPre.appendChild(codeViewerCode);
