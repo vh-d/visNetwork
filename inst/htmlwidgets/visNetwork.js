@@ -2419,76 +2419,104 @@ HTMLWidgets.widget({
       }
     }    
     
-    function searchNode(searchtext, searchfield, modifier = 'i') {
-      if (searchtext == "") {
+    function searchNode(searchtext, searchfield, regexp = false, modifier = 'i') {
+
+      if (searchtext === "") {
         instance.network.unselectAll();
-        if (el_id.dataviewer) displayInDataViewer([])
+        if (el_id.dataviewer) dataViewerDisplay([])
         return null;
       }
-      
-      let query = new RegExp(searchtext, modifier)
-      const match = nodes.map(function(x) {
-        if (query.test(x[searchfield])) {return(x.id)} else return(null)
-      }).filter(x => x !== null)
-      //alert(JSON.stringify(match))
-      if (match.length > 0) {
-        try {
-          match.reverse();
-          selectAndHighlight(match);
-          // instance.network.selectNodes(match)
-          if (el_id.dataviewer) {
-            displayInDataViewer(match, highlight = query);
-          }
-          // document.getElementById("sourcecode").innerHTML = match.map(i => i.title).join("<br><br>")
-        } catch {
-          
-        } 
+
+      var match = [];
+      var query = null;
+
+      if (regexp) {
+        query = new RegExp(searchtext, modifier);
+        match = nodes.map(
+          function(x){
+            if (query.test(x[searchfield])) {
+              return(x.id)
+            } else return(null)
+        }).filter(x => x !== null);
       } else {
-        instance.network.selectNodes([]);
-        // document.getElementById("sourcecode").innerHTML = ""
+        query = searchtext;
+        match = nodes.map(
+          function(x) {
+            if (x.hasOwnProperty(searchfield) && String(x[searchfield]).includes(query)) {
+              return(x.id);
+            } else return(null);
+        }).filter(x => x !== null);
       }
-    }
+      
+      try {
+        match.reverse();
+        selectAndHighlight(match);
+        if (el_id.dataviewer) {
+          dataViewerListSelect(ftQueryList.value); // sync field selection
+          dataViewerDisplay(match, highlight = query, regexp = regexp);
+        }
+      } catch {
+        console.log("Unable to select and highlight. Match:", match, "Field:", ftQueryList.value, "Query:", query)
+      } 
+  }
     
+    // instantiate search query input 
     var ftQueryInput = document.createElement("input");
     ftQueryInput.id = "ftQueryInput"+el.id;
     ftQueryInput.setAttribute('type', 'search');
-    ftQueryInput.style = x.ftselection.style;
-    ftQueryInput.style.display = 'none';
-    ftQueryInput.setAttribute('placeholder', x.ftselection.main);
-    el_id.appendChild(ftQueryInput);
 
+    // instantiate search fields menu
     var ftQueryList = document.createElement("select");
     ftQueryList.id = "ftQueryList"+el.id;
     ftQueryList.setAttribute('class', 'dropdown');
-    //ftQueryList.style.display = 'none';
-    el_id.appendChild(ftQueryList);
 
-    ftQueryInput.onchange = function() {
-      if (instance.network){
-        searchNode(ftQueryInput.value, ftQueryList.value);
-      }
-    };
+    // instantiate search fields menu
+    var ftCaseSensitiveCheckbox = document.createElement("input");
+    ftCaseSensitiveCheckbox.setAttribute('type', 'checkbox');
+    ftCaseSensitiveCheckbox.id = "ftCaseSensitiveCheckbox"+el.id;
 
-    ftQueryList.onchange =  function() {
-      if (instance.network){
-        searchNode(ftQueryInput.value, ftQueryList.value);
-      }
-    };
-
-    var hr = document.createElement("hr");
-    hr.setAttribute('style', 'height:0px; visibility:hidden; margin-bottom:-1px;');
-    el_id.appendChild(hr);
+    var ftRegExpCheckbox = document.createElement("input");
+    ftRegExpCheckbox.setAttribute('type', 'checkbox');
+    ftRegExpCheckbox.id = "ftRegExpCheckbox"+el.id;
 
     if (el_id.ftselection) {
+      ftQueryInput.style = x.ftselection.style;
       ftQueryInput.style.display = 'inline';
-      //ftQueryList.style.display = 'inline';
+      ftQueryInput.setAttribute('placeholder', x.ftselection.hint);
+
+      // populate the dropdown menu
       for (const val of x.ftselection.fields) {
-        var option = document.createElement("option");
+        let option = document.createElement("option");
         option.value = val;
         option.text = val;
         if (val == x.ftselection.defaultField) option.selected = true;
         ftQueryList.appendChild(option);
       }
+
+      // append above the network window
+      el_id.appendChild(ftQueryInput);
+      el_id.appendChild(ftQueryList);
+      
+      el_id.appendChild(document.createTextNode("Aa"));
+      ftCaseSensitiveCheckbox.checked = false;
+      el_id.appendChild(ftCaseSensitiveCheckbox);
+
+      el_id.appendChild(document.createTextNode("RegExp"));
+      ftRegExpCheckbox.checked = false;
+      el_id.appendChild(ftRegExpCheckbox);
+
+      ftQueryInput.onsearch = function() {
+        if (instance.network){
+          searchNode(ftQueryInput.value, ftQueryList.value, ftRegExpCheckbox.checked, ftCaseSensitiveCheckbox.checked ? "":"i");
+        }
+      };
+      ftQueryInput.onchange = ftQueryInput.onsearch;
+      ftQueryList.onchange = ftQueryInput.onsearch;
+
+      let hr = document.createElement("hr");
+      hr.setAttribute('style', 'height:0px; visibility:hidden; margin-bottom:-1px;');
+      el_id.appendChild(hr);
+
     }
     
     //*************************
@@ -3858,7 +3886,7 @@ HTMLWidgets.widget({
     instance.network.on("selectNode", function(params){
       onIdChange(params.nodes[0], false);
       if (el_id.dataviewer) {
-        displayInDataViewer(params["nodes"])
+        dataViewerDisplay(params["nodes"])
       }
     });
 
@@ -3892,8 +3920,18 @@ HTMLWidgets.widget({
     //*************************
     //dataviewer
     //*************************
-    function displayInDataViewer(ns, highlight = null) {
+    function dataViewerListSelect(optionText) {
+       const optionIndex = [...dataViewerList.options].findIndex(option => option.text === optionText);
+       if (optionIndex) dataViewerList.selectedIndex = optionIndex;
+    }
+
+    function dataViewerCleanup() {
       dataViewerEl.innerHTML = '';
+    }
+
+    function dataViewerDisplay(ns, highlight = null, regexp = false) {
+      dataViewerCleanup();
+
       //for (i = nodes._getItem(params["nodes"])) //nodes.find(el => el.id == params["nodes"][0])
       // dataViewerEl.innerHTML = i.title //+ "<br>" + JSON.stringify(params)
       ns.forEach(function(i) {
@@ -3923,14 +3961,21 @@ HTMLWidgets.widget({
         var content = document.createElement("div")
         content.innerHTML = ii[dataViewerList.value];
 
-        if (highlight !== null && (highlight instanceof RegExp)) {
-          const lines = ii[dataViewerList.value].split("\n");
-          const linesToHighlight = lines.map(function(value, index) {return highlight.test(value)?(index+1):-1}).filter(x => x >= 0).join();
-          //content.childNodes.find(x => x.className.substring(1, 8) === "language").forEach(x => x.setAttribute("data-line", linesToHighlight));
+        if (highlight !== null) {
+
+          const lines = String(ii[dataViewerList.value]).split("\n");
+          let linesToHighlight = [];
+
+          if (highlight instanceof RegExp) {
+            linesToHighlight = lines.map(function(value, index) {return highlight.test(value)?(index+1):-1}).filter(x => x >= 0).join();
+            //content.childNodes.find(x => x.className.substring(1, 8) === "language").forEach(x => x.setAttribute("data-line", linesToHighlight));
+          } else {
+            linesToHighlight = lines.map(function(value, index) {return value.includes(highlight)?(index+1):-1}).filter(x => x >= 0).join();            
+          }
           content.childNodes.forEach(function(x) {if (x.tagName === "PRE") x.setAttribute("data-line", linesToHighlight)})
         }
         
-        dataViewerEl.appendChild(content)
+        dataViewerEl.appendChild(content);
         // codeViewerCode.setAttribute("class", "language-r");
         
         // codeViewerPre.appendChild(codeViewerCode);
@@ -3938,8 +3983,9 @@ HTMLWidgets.widget({
         //adjust size
         // codeViewerCode.style = "overflow: scroll; max-height: 100px";
         // highlight
-      })
-      Prism.highlightAllUnder(dataViewerEl);
+      });
+
+      if (highlight !== null) Prism.highlightAllUnder(dataViewerEl);
     }
 
     var dataViewerCont = document.createElement("div")
@@ -3954,7 +4000,7 @@ HTMLWidgets.widget({
     
     dataViewerList.onchange =  function() {
       if (instance.network){
-        displayInDataViewer(instance.network.getSelectedNodes(), dataViewerList.value)
+        dataViewerDisplay(instance.network.getSelectedNodes(), dataViewerList.value)
       }
     };
 

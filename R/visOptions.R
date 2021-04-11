@@ -470,7 +470,7 @@ visOptions <- function(graph,
     ftselection <-
       list(
         enabled = FALSE,
-        main = "Search query...",
+        hint = "Search in...",
         style = 'width: 250px',
         fields = colnames(graph$x$nodes), #c("id", "label", "title")
         defaultField = "id"
@@ -480,8 +480,8 @@ visOptions <- function(graph,
     # nodesFTSelection
     #############################   
     if(is.list(nodesFTSelection)){
-      if(any(!names(nodesFTSelection)%in%c("enabled", "style", "value", "fields", "defaultField", "main"))){
-        stop("Invalid 'nodesFTSelection' argument. List can have 'enabled', 'style', 'value', 'attrs', 'main'")
+      if(any(!names(nodesFTSelection)%in%c("enabled", "style", "value", "fields", "defaultField", "hint"))){
+        stop("Invalid 'nodesFTSelection' argument. List can have 'enabled', 'style', 'value', 'attrs', 'hint'")
       }
       if("enabled"%in%names(nodesFTSelection)){
         ftselection$enabled <- nodesFTSelection$enabled
