@@ -2453,7 +2453,7 @@ HTMLWidgets.widget({
         selectAndHighlight(match);
         if (el_id.dataviewer) {
           dataViewerListSelect(ftQueryList.value); // sync field selection
-          dataViewerDisplay(match, highlight = query, regexp = regexp);
+          dataViewerDisplay(match, highlight = query, regexp = regexp, modifier = modifier);
         }
       } catch {
         console.log("Unable to select and highlight. Match:", match, "Field:", ftQueryList.value, "Query:", query)
@@ -3929,7 +3929,7 @@ HTMLWidgets.widget({
       dataViewerEl.innerHTML = '';
     }
 
-    function dataViewerDisplay(ns, highlight = null, regexp = false) {
+    function dataViewerDisplay(ns, highlight = null, regexp = false, modifier = null) {
       dataViewerCleanup();
 
       //for (i = nodes._getItem(params["nodes"])) //nodes.find(el => el.id == params["nodes"][0])
@@ -3963,14 +3963,19 @@ HTMLWidgets.widget({
 
         if (highlight !== null) {
 
-          const lines = String(ii[dataViewerList.value]).split("\n");
-          let linesToHighlight = [];
+          var lines = String(ii[dataViewerList.value]).split("\n");
+          var linesToHighlight = [];
 
           if (highlight instanceof RegExp) {
             linesToHighlight = lines.map(function(value, index) {return highlight.test(value)?(index+1):-1}).filter(x => x >= 0).join();
             //content.childNodes.find(x => x.className.substring(1, 8) === "language").forEach(x => x.setAttribute("data-line", linesToHighlight));
           } else {
-            linesToHighlight = lines.map(function(value, index) {return value.includes(highlight)?(index+1):-1}).filter(x => x >= 0).join();            
+            // lowercase both for case-insensitive search
+            if (modifier && String(modifier).includes("i")) {
+              highlight = highlight.toLowerCase()
+              lines = lines.map(x => x.toLowerCase());            
+            }
+            linesToHighlight = lines.map(function(value, index) {return value.includes(highlight)?(index+1):-1}).filter(x => x >= 0).join();                        
           }
           content.childNodes.forEach(function(x) {if (x.tagName === "PRE") x.setAttribute("data-line", linesToHighlight)})
         }
