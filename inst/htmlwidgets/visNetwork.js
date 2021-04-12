@@ -2470,7 +2470,7 @@ HTMLWidgets.widget({
     ftQueryList.id = "ftQueryList"+el.id;
     ftQueryList.setAttribute('class', 'dropdown');
 
-    // instantiate search fields menu
+    // instantiate checkboxes
     var ftCaseSensitiveCheckbox = document.createElement("input");
     ftCaseSensitiveCheckbox.setAttribute('type', 'checkbox');
     ftCaseSensitiveCheckbox.id = "ftCaseSensitiveCheckbox"+el.id;
@@ -2512,6 +2512,8 @@ HTMLWidgets.widget({
       };
       ftQueryInput.onchange = ftQueryInput.onsearch;
       ftQueryList.onchange = ftQueryInput.onsearch;
+      ftCaseSensitiveCheckbox.onchange = ftQueryInput.onsearch;
+      ftRegExpCheckbox.onchange = ftQueryInput.onsearch;
 
       let hr = document.createElement("hr");
       hr.setAttribute('style', 'height:0px; visibility:hidden; margin-bottom:-1px;');
