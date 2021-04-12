@@ -2352,6 +2352,10 @@ HTMLWidgets.widget({
     function onByChange(value) {
         if(instance.network){
           selectedHighlight(value);
+          if (el_id.dataviewer) {
+            const sel = nodes.map(x => x[el_id.byselection_variable] == value ? x.id : null).filter(x => x !== null);
+            dataViewerDisplay(sel);
+          }
         }
         if (window.Shiny){
           changeInput('selectedBy', value);
