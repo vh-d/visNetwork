@@ -3985,7 +3985,7 @@ HTMLWidgets.widget({
         // highlight
       });
 
-      if (highlight !== null) Prism.highlightAllUnder(dataViewerEl);
+      Prism.highlightAllUnder(dataViewerEl);
     }
 
     var dataViewerCont = document.createElement("div")
