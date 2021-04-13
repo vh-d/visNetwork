@@ -1020,6 +1020,9 @@ function setNodeIdList(selectList, params, nodes){
   }
 }
 
+function filterId(nodes, f) {
+  nodes.map(f).filter()
+}
 //----------------------------------------------------------------
 // Collapsed function
 //---------------------------------------------------------------- 
@@ -2444,12 +2447,22 @@ HTMLWidgets.widget({
         }).filter(x => x !== null);
       } else {
         query = searchtext;
-        match = nodes.map(
-          function(x) {
-            if (x.hasOwnProperty(searchfield) && String(x[searchfield]).includes(query)) {
-              return(x.id);
-            } else return(null);
-        }).filter(x => x !== null);
+        if (modifier.includes("i")) {
+          query = query.toLowerCase();
+          match = nodes.map(
+              function(x) {
+                if (x.hasOwnProperty(searchfield) && String(x[searchfield]).toLowerCase().includes(query)) {
+                  return(x.id);
+                } else return(null);
+              }).filter(x => x !== null);
+        } else {
+            match = nodes.map(
+              function(x) {
+                if (x.hasOwnProperty(searchfield) && String(x[searchfield]).includes(query)) {
+                  return(x.id);
+                } else return(null);
+              }).filter(x => x !== null);
+        }
       }
       
       try {
