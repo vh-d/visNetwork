@@ -2200,6 +2200,7 @@ HTMLWidgets.widget({
     el_id.idselection = x.idselection.enabled;
     el_id.byselection = x.byselection.enabled;
     el_id.ftselection = x.ftselection.enabled;
+    el_id.jitter = x.jitter.enabled;
     el_id.dataviewer = x.dataviewer.enabled;
 
     if(x.highlight !== undefined){
@@ -2416,6 +2417,7 @@ HTMLWidgets.widget({
       }
     }
 
+
     //*************************
     //fulltext selection
     //*************************
@@ -2537,7 +2539,26 @@ HTMLWidgets.widget({
       el_id.appendChild(hr);
 
     }
+
+    //*******************
+    //jitter
+    function jitterNodes() {
+      var allNodesIds = nodes.getIds();
+      allNodesIds.forEach(function(n) {
+        var pos = instance.network.getPositions(n)[n];
+        instance.network.moveNode(n, pos.x, pos.y + el_id.jitter_coef*(Math.random()-0.5));
+      });
+    }
     
+    var jitterButton = document.createElement("button");
+    
+    if (el_id.jitter) {
+      el_id.jitter_coef = x.jitter.coef;
+      jitterButton.onclick = jitterNodes;
+      jitterButton.innerText = "Jitter!";
+      el_id.appendChild(jitterButton);
+    }
+
     //*************************
     // pre-treatment for icons (unicode)
     //*************************

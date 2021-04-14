@@ -243,6 +243,7 @@ visOptions <- function(graph,
                        nodesIdSelection = FALSE,
                        nodesFTSelection = FALSE,
                        dataViewer = FALSE,
+                       jitter     = FALSE,
                        selectedBy = NULL,
                        collapse = FALSE,
                        autoResize = NULL,
@@ -547,6 +548,34 @@ visOptions <- function(graph,
       }
     }
 
+    # jitter -----------------------------------------------
+    jitterOptions <-
+      list(
+        enabled = FALSE,
+        coef = 10,
+        style = NULL,
+        main = "Jitter!"
+      )
+    
+    if(is.list(jitter)){
+      if(any(!names(jitter)%in%c("enabled", "coef", "style", "main"))){
+        stop("Invalid 'jitter' argument. List can have 'coef', 'style', 'main'")
+      }
+      if("enabled"%in%names(jitter)){
+        jitterOptions$enabled <- dataViewer$enabled
+      }else{
+        jitterOptions$enabled <- TRUE
+      }
+      if("coef"%in%names(jitter)){
+        jitterOptions$coef <- jitter$coef
+      }      
+    } else if(is.logical(jitter)){
+      jitterOptions$enabled <- jitter
+    } else{
+      stop("Invalid 'jitter' argument")
+    }
+  
+    
     #############################
     # nodesIdSelection
     #############################
@@ -755,6 +784,7 @@ visOptions <- function(graph,
     byselection = byselection, 
     ftselection = ftselection, 
     dataviewer = dataviewer, 
+    jitter    = jitterOptions,
     collapse = list_collapse
   )
 
