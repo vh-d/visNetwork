@@ -360,21 +360,21 @@ visNetwork <- function(nodes = NULL, edges = NULL, dot = NULL, gephi = NULL,
   }
 
   # previous legend control
-  ctrl <- list(...)
-  legend <- NULL
-  if("legend"%in%names(ctrl)){
-    warning("'legend' and 'legend.width' are deprecated (visNetwork >= 0.1.2). Please now prefer use visLegend function.")
-    if(ctrl$legend){
-      legend <- list()
-      if("legend.width"%in%names(ctrl)){
-        legend$width <- ctrl$legend.width
-      }else{
-        legend$width <- 0.2
-      }
-      legend$useGroups <- TRUE
-      legend$position <- "left"
-    }
-  }
+  # ctrl <- list(...)
+  # legend <- NULL
+  # if("legend"%in%names(ctrl)){
+  #   warning("'legend' and 'legend.width' are deprecated (visNetwork >= 0.1.2). Please now prefer use visLegend function.")
+  #   if(ctrl$legend){
+  #     legend <- list()
+  #     if("legend.width"%in%names(ctrl)){
+  #       legend$width <- ctrl$legend.width
+  #     }else{
+  #       legend$width <- 0.2
+  #     }
+  #     legend$useGroups <- TRUE
+  #     legend$position <- "left"
+  #   }
+  # }
 
   x$legend <- legend
 
@@ -384,6 +384,7 @@ visNetwork <- function(nodes = NULL, edges = NULL, dot = NULL, gephi = NULL,
     x,
     width = width,
     height = height,
-    package = 'visNetwork'
+    package = 'visNetwork',
+    ...
   )
 }
