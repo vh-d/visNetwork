@@ -2513,17 +2513,37 @@ HTMLWidgets.widget({
       }
 
       // append above the network window
+      // Query input
       el_id.appendChild(ftQueryInput);
       el_id.appendChild(ftQueryList);
       
-      el_id.appendChild(document.createTextNode("Aa"));
+      // Case Sensitive checkbox
+      var ftCSChkboxDiv = document.createElement("div");
+      ftCSChkboxDiv.style.display = "inline";
+      ftCSChkboxDiv.style.margin = "1px";
+      ftCSChkboxDiv.style.border = "1px";
+      ftCSChkboxDiv.style.borderStyle = "solid";
+      ftCSChkboxDiv.style.borderColor = "black";
+
+      ftCSChkboxDiv.appendChild(document.createTextNode("Aa"));
       ftCaseSensitiveCheckbox.checked = false;
-      el_id.appendChild(ftCaseSensitiveCheckbox);
+      ftCSChkboxDiv.appendChild(ftCaseSensitiveCheckbox);
+      el_id.appendChild(ftCSChkboxDiv);
+      
+      // Regular expression checkbox
+      var ftREChkboxDiv = document.createElement("div");
+      ftREChkboxDiv.style.display = "inline";
+      ftREChkboxDiv.style.margin = "1px";
+      ftREChkboxDiv.style.border = "1px";
+      ftREChkboxDiv.style.borderStyle = "solid";
+      ftREChkboxDiv.style.borderColor = "black";
 
-      el_id.appendChild(document.createTextNode("RegExp"));
+      ftREChkboxDiv.appendChild(document.createTextNode("RegExp"));
       ftRegExpCheckbox.checked = false;
-      el_id.appendChild(ftRegExpCheckbox);
+      ftREChkboxDiv.appendChild(ftRegExpCheckbox);
+      el_id.appendChild(ftREChkboxDiv);
 
+      // handle user input
       ftQueryInput.onsearch = function() {
         if (instance.network){
           searchNode(ftQueryInput.value, ftQueryList.value, ftRegExpCheckbox.checked, ftCaseSensitiveCheckbox.checked ? "":"i");
@@ -2533,20 +2553,26 @@ HTMLWidgets.widget({
       ftQueryList.onchange = ftQueryInput.onsearch;
       ftCaseSensitiveCheckbox.onchange = ftQueryInput.onsearch;
       ftRegExpCheckbox.onchange = ftQueryInput.onsearch;
-
-      let hr = document.createElement("hr");
-      hr.setAttribute('style', 'height:0px; visibility:hidden; margin-bottom:-1px;');
-      el_id.appendChild(hr);
-
     }
 
     //*******************
     //jitter
     function jitterNodes() {
       var allNodesIds = nodes.getIds();
-      allNodesIds.forEach(function(n) {
-        var pos = instance.network.getPositions(n)[n];
-        instance.network.moveNode(n, pos.x, pos.y + el_id.jitter_coef*(Math.random()-0.5));
+      var allPositions = Object.entries(instance.network.getPositions(allNodesIds));
+      var allPositionsSorted = allPositions.sort(function(a, b) {return(a[1].x < b[1].x)?-1:1});
+      var yCoords = allPositions.map(x => Number(x[1].y));
+
+      // every other node will be moved down by a fixed delta
+      var newCoords = yCoords.map(function(y) {
+        return allPositionsSorted.filter(i => i[1].y === y).map(function(value, index) {
+          return((index % 2) == 0) ? value : [value[0], {x: value[1].x, y: value[1].y + 20}]
+        })
+      });
+
+      newCoords = [].concat.apply([], newCoords);
+      newCoords.forEach(function(n) {
+        instance.network.moveNode(n[0], n[1].x, n[1].y);
       });
     }
     
@@ -2558,7 +2584,11 @@ HTMLWidgets.widget({
       jitterButton.innerText = "Jitter!";
       el_id.appendChild(jitterButton);
     }
-
+    
+    let hr2 = document.createElement("hr");
+    hr2.setAttribute('style', 'height:0px; visibility:hidden; margin-bottom:-1px;');
+    el_id.appendChild(hr2);
+    
     //*************************
     // pre-treatment for icons (unicode)
     //*************************
