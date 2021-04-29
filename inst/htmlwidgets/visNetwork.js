@@ -2533,7 +2533,7 @@ HTMLWidgets.widget({
       ftREChkboxDiv.style.display = "inline";
       ftREChkboxDiv.style.margin = "1px 6px 1px 1px";
       ftRegExpCheckbox.style.margin = "0px";
-      
+
       ftREChkboxDiv.appendChild(ftRegExpCheckbox);
       ftRegExpCheckbox.checked = false;
       ftREChkboxDiv.appendChild(document.createTextNode("RegExp"));
@@ -2558,7 +2558,8 @@ HTMLWidgets.widget({
       var allPositions = Object.entries(instance.network.getPositions(allNodesIds));
       var allPositionsSorted = allPositions.sort(function(a, b) {return(a[1].x < b[1].x)?-1:1});
       var yCoords = allPositions.map(x => Number(x[1].y));
-
+      yCoords = [...new Set(yCoords)];
+      
       // every other node will be moved down by a fixed delta
       var newCoords = yCoords.map(function(y) {
         return allPositionsSorted.filter(i => i[1].y === y).map(function(value, index) {
