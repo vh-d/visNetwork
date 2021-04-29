@@ -2520,27 +2520,23 @@ HTMLWidgets.widget({
       // Case Sensitive checkbox
       var ftCSChkboxDiv = document.createElement("div");
       ftCSChkboxDiv.style.display = "inline";
-      ftCSChkboxDiv.style.margin = "1px";
-      ftCSChkboxDiv.style.border = "1px";
-      ftCSChkboxDiv.style.borderStyle = "solid";
-      ftCSChkboxDiv.style.borderColor = "black";
+      ftCSChkboxDiv.style.margin = "1px 6px 1px 1px";
+      ftCaseSensitiveCheckbox.style.margin = "0px";
 
-      ftCSChkboxDiv.appendChild(document.createTextNode("Aa"));
-      ftCaseSensitiveCheckbox.checked = false;
       ftCSChkboxDiv.appendChild(ftCaseSensitiveCheckbox);
+      ftCaseSensitiveCheckbox.checked = false;
+      ftCSChkboxDiv.appendChild(document.createTextNode("Aa"));
       el_id.appendChild(ftCSChkboxDiv);
       
       // Regular expression checkbox
       var ftREChkboxDiv = document.createElement("div");
       ftREChkboxDiv.style.display = "inline";
-      ftREChkboxDiv.style.margin = "1px";
-      ftREChkboxDiv.style.border = "1px";
-      ftREChkboxDiv.style.borderStyle = "solid";
-      ftREChkboxDiv.style.borderColor = "black";
-
-      ftREChkboxDiv.appendChild(document.createTextNode("RegExp"));
-      ftRegExpCheckbox.checked = false;
+      ftREChkboxDiv.style.margin = "1px 6px 1px 1px";
+      ftRegExpCheckbox.style.margin = "0px";
+      
       ftREChkboxDiv.appendChild(ftRegExpCheckbox);
+      ftRegExpCheckbox.checked = false;
+      ftREChkboxDiv.appendChild(document.createTextNode("RegExp"));
       el_id.appendChild(ftREChkboxDiv);
 
       // handle user input
