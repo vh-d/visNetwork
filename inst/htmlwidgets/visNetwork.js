@@ -3942,11 +3942,13 @@ HTMLWidgets.widget({
 
     // Set event in relation with highlightNearest
     instance.network.on("click", function(params){
-        if(el_id.highlight && x.nodes){
-          neighbourhoodHighlight(params.nodes, "click", el_id.highlightAlgorithm, true);
-        }else if((el_id.idselection || el_id.byselection) && x.nodes){
-          onClickIDSelection(params)
-        }
+      if (el_id.dataviewer && params.nodes.length === 1 && instance.network.getSelectedNodes().includes(params.nodes[0])) {
+        dataViewerEl.scrollTop = document.getElementById("dataViewerNode-" + params.nodes[0]).offsetTop - dataViewerEl.offsetTop;
+      } else if(el_id.highlight && x.nodes){
+        neighbourhoodHighlight(params.nodes, "click", el_id.highlightAlgorithm, true);
+      }else if((el_id.idselection || el_id.byselection) && x.nodes){
+        onClickIDSelection(params)
+      }
     });
     
     instance.network.on("selectNode", function(params){
@@ -4005,6 +4007,8 @@ HTMLWidgets.widget({
         ii = nodes._getItem(i);
 
         var nodeHeaderCont = document.createElement("div");
+        nodeHeaderCont.setAttribute("id", "dataViewerNode-" + i);
+
         var nodeheader = document.createElement("figcaption");
         nodeheader.innerHTML = "".concat(i, " - ", ii["title"]);
         nodeheader.style = "margin: 0; cursor: pointer; font-size: 0.9em";
