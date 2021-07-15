@@ -2424,7 +2424,7 @@ HTMLWidgets.widget({
     function selectAndHighlight(ids) {
       instance.network.selectNodes(ids);
       if(el_id.highlight){
-        neighbourhoodHighlight(instance.network.getSelection().nodes, "click", el_id.highlightAlgorithm, true);
+        neighbourhoodHighlight(instance.network.getSelection().nodes, "click", "all", true, 0);
       }
     }    
     
@@ -3483,7 +3483,7 @@ HTMLWidgets.widget({
     var is_hovered = false;
     var is_clicked = false;
 
-    function neighbourhoodHighlight(params, action_type, algorithm, reset_selectedBy) {
+    function neighbourhoodHighlight(params, action_type, algorithm, reset_selectedBy, degrees = null) {
 
       var nodes_in_clusters = instance.network.body.modules.clustering.clusteredNodes;
       var have_cluster_nodes = false;
@@ -3542,7 +3542,7 @@ HTMLWidgets.widget({
 
           el_id.highlightActive = true;
           var i,j;
-          var degrees = el_id.degree;
+          if (!degrees) degrees = el_id.degree;
 
           // mark all nodes as hard to read.
           for (var nodeId in instance.network.body.nodes) {
@@ -3934,28 +3934,36 @@ HTMLWidgets.widget({
 
     // shared click function (selectedNodes)
     document.getElementById("graph"+el.id).myclick = function(params){
-        if(el_id.highlight && x.nodes){
-          neighbourhoodHighlight(params.nodes, "click", el_id.highlightAlgorithm, true);
-        }else if((el_id.idselection || el_id.byselection) && x.nodes){
-          onClickIDSelection(params)
+      if (ftQueryInput && ftQueryInput.value){ // full-text search activated
+        if (el_id.dataviewer && params.nodes.length === 1 && instance.network.getSelectedNodes().includes(params.nodes[0])) {
+          dataViewerEl.scrollTop = document.getElementById("dataViewerNode-" + params.nodes[0]).offsetTop - dataViewerEl.offsetTop;
         }
+      } else if(el_id.highlight && x.nodes){
+        neighbourhoodHighlight(params.nodes, "click", el_id.highlightAlgorithm, true);
+      } else if((el_id.idselection || el_id.byselection) && x.nodes){
+        onClickIDSelection(params)
+      }
     };
 
     // Set event in relation with highlightNearest
     instance.network.on("click", function(params){
-      if (el_id.dataviewer && params.nodes.length === 1 && instance.network.getSelectedNodes().includes(params.nodes[0])) {
-        dataViewerEl.scrollTop = document.getElementById("dataViewerNode-" + params.nodes[0]).offsetTop - dataViewerEl.offsetTop;
+      if (ftQueryInput && ftQueryInput.value){ // full-text search activated
+        if (el_id.dataviewer && params.nodes.length === 1 && instance.network.getSelectedNodes().includes(params.nodes[0])) {
+          dataViewerEl.scrollTop = document.getElementById("dataViewerNode-" + params.nodes[0]).offsetTop - dataViewerEl.offsetTop;
+        }
       } else if(el_id.highlight && x.nodes){
         neighbourhoodHighlight(params.nodes, "click", el_id.highlightAlgorithm, true);
-      }else if((el_id.idselection || el_id.byselection) && x.nodes){
+      } else if((el_id.idselection || el_id.byselection) && x.nodes){
         onClickIDSelection(params)
       }
     });
     
     instance.network.on("selectNode", function(params){
-      onIdChange(params.nodes[0], false);
-      if (el_id.dataviewer) {
-        dataViewerDisplay(params["nodes"])
+      if (!(ftQueryInput && ftQueryInput.value)) {
+        onIdChange(params.nodes[0], false);
+        if (el_id.dataviewer) {
+          dataViewerDisplay(params["nodes"])
+        }
       }
     });
 
