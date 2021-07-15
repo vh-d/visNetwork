@@ -19,7 +19,7 @@ visNetwork(
 )
 }
 \arguments{
-\item{nodes}{: data.frame or a list with nodes informations. Needed at least column "id". See \link{visNodes} 
+\item{nodes}{: data.frame or a list with nodes informations. Needed at least column "id". See \link{visNodes}
 \itemize{
  \item{"id"}{ : id of the node, needed in edges information}
  \item{"label"}{ : label of the node}
@@ -84,19 +84,19 @@ visNetwork(nodes, edges)
 visNetwork(nodes, edges, main = "visNetwork minimal example")
 visNetwork(nodes, edges, main = list(text = "visNetwork minimal example",
  style = "font-family:Comic Sans MS;color:#ff0000;font-size:15px;text-align:center;"))
- 
+
 # and subtitle and footer
 visNetwork(nodes, edges, main = "visNetwork minimal example",
  submain = "For add a subtitle", footer = "Fig.1 minimal example")
- 
+
 # change background color
 visNetwork(nodes, edges, background = "black")
 
 # customization adding more variables (see visNodes and visEdges)
-nodes <- data.frame(id = 1:10, 
+nodes <- data.frame(id = 1:10,
                     label = paste("Node", 1:10),                                 # labels
-                    group = c("GrA", "GrB"),                                     # groups 
-                    value = 1:10,                                                # size 
+                    group = c("GrA", "GrB"),                                     # groups
+                    value = 1:10,                                                # size
                     shape = c("square", "triangle", "box", "circle", "dot", "star",
                               "ellipse", "database", "text", "diamond"),         # shape
                     title = paste0("<p><b>", 1:10,"</b><br>Node !</p>"),         # tooltip
@@ -112,11 +112,11 @@ edges <- data.frame(from = sample(1:10,8), to = sample(1:10, 8),
                     smooth = c(FALSE, TRUE),                                    # smooth
                     shadow = c(FALSE, TRUE, FALSE, TRUE))                       # shadow
 
-visNetwork(nodes, edges) 
+visNetwork(nodes, edges)
 
-# use more complex configuration : 
+# use more complex configuration :
 # when it's a list, you can use data.frame with specific notation like this
-nodes <- data.frame(id = 1:3, color.background = c("red", "blue", "green"), 
+nodes <- data.frame(id = 1:3, color.background = c("red", "blue", "green"),
  color.highlight.background = c("red", NA, "red"), shadow.size = c(5, 10, 15))
 edges <- data.frame(from = c(1,2), to = c(1,3),
  label = LETTERS[1:2], font.color =c ("red", "blue"), font.size = c(10,20))
@@ -129,26 +129,26 @@ nodes <- data.frame(id = 1:15, label = paste("Label", 1:15),
 
 edges <- data.frame(from = trunc(runif(15)*(15-1))+1,
  to = trunc(runif(15)*(15-1))+1)
- 
+
 visNetwork(nodes, edges) \%>\% visOptions(highlightNearest = TRUE)
 
-# try an id node selection 
-visNetwork(nodes, edges) \%>\% 
+# try an id node selection
+visNetwork(nodes, edges) \%>\%
  visOptions(highlightNearest = TRUE, nodesIdSelection = TRUE)
- 
+
 # or add a selection on another column
-visNetwork(nodes, edges) \%>\% 
+visNetwork(nodes, edges) \%>\%
  visOptions(selectedBy = "group")
 
 nodes$sel <- sample(c("sel1", "sel2"), nrow(nodes), replace = TRUE)
-visNetwork(nodes, edges) \%>\% 
+visNetwork(nodes, edges) \%>\%
  visOptions(selectedBy = "sel")
-   
+
 # add legend
 visNetwork(nodes, edges) \%>\% visLegend()
-    
+
 # directed network
-visNetwork(nodes, edges) \%>\% 
+visNetwork(nodes, edges) \%>\%
  visEdges(arrows = 'from', scaling = list(min = 2, max = 2))
 
 # custom navigation
@@ -165,7 +165,7 @@ visNetwork(nodes, edges) \%>\% visHierarchicalLayout()
 visNetwork(nodes, edges) \%>\%
  visInteraction(dragNodes = FALSE, dragView = FALSE, zoomView = FALSE)
 
-# use fontAwesome icons using groups or nodes options 
+# use fontAwesome icons using groups or nodes options
 # font-awesome is not part of dependencies. use addFontAwesome() if needed
 # http://fortawesome.github.io/Font-Awesome
 
@@ -186,18 +186,18 @@ visNetwork(nodes, edges) \%>\%
 
 # Save a network
 \dontrun{
-network <- visNetwork(nodes, edges) %>% 
+network <- visNetwork(nodes, edges) \%>\%
  visOptions(highlightNearest = TRUE, nodesIdSelection = TRUE,
- manipulation = TRUE) %>% visLegend()
- 
-network %>% visSave(file = "network.html")
+ manipulation = TRUE) \%>\% visLegend()
+
+network \%>\% visSave(file = "network.html")
 # same as
 visSave(network, file = "network.html")
 }
 
 # Export as png/jpeg (shiny or browser only)
 \dontrun{
-visNetwork(nodes, edges) %>% 
+visNetwork(nodes, edges) \%>\%
  visExport()
 }
 
@@ -206,7 +206,7 @@ visNetwork(dot = 'dinetwork {1 -> 1 -> 2; 2 -> 3; 2 -- 4; 2 -> 1 }')
 
 # gephi json file
 \dontrun{
-visNetwork(gephi = 'WorldCup2014.json') %>% visPhysics(stabilization = FALSE,   barnesHut = list(
+visNetwork(gephi = 'WorldCup2014.json') \%>\% visPhysics(stabilization = FALSE,   barnesHut = list(
     gravitationalConstant = -10000,
     springConstant = 0.002,
     springLength = 150
@@ -218,9 +218,9 @@ visNetwork(gephi = 'WorldCup2014.json') %>% visPhysics(stabilization = FALSE,   
 See online documentation \url{http://datastorm-open.github.io/visNetwork/}
 }
 \seealso{
-\link{visNodes} for nodes options, \link{visEdges} for edges options, \link{visGroups} for groups options, 
-\link{visLegend} for adding legend, \link{visOptions} for custom option, \link{visLayout} & \link{visHierarchicalLayout} for layout, 
+\link{visNodes} for nodes options, \link{visEdges} for edges options, \link{visGroups} for groups options,
+\link{visLegend} for adding legend, \link{visOptions} for custom option, \link{visLayout} & \link{visHierarchicalLayout} for layout,
 \link{visPhysics} for control physics, \link{visInteraction} for interaction, \link{visNetworkProxy} for play with network using shiny,
-\link{visTree} to visualize CART rpart tree, \link{visNetworkEditor} to edit your network, 
+\link{visTree} to visualize CART rpart tree, \link{visNetworkEditor} to edit your network,
 \link{visDocumentation}, \link{visEvents}, \link{visConfigure} ...
 }

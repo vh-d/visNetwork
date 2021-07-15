@@ -11,6 +11,7 @@ visOptions(
   highlightNearest = FALSE,
   nodesIdSelection = FALSE,
   nodesFTSelection = FALSE,
+  dataViewer = FALSE,
   selectedBy = NULL,
   collapse = FALSE,
   autoResize = NULL,
@@ -72,7 +73,7 @@ visOptions(
 
 \item{clickToUse}{: Boolean. Default to false. When a Network is configured to be clickToUse, it will react to mouse, touch, and keyboard events only when active. When active, a blue shadow border is displayed around the Network. The Network is set active by clicking on it, and is changed to inactive again by clicking outside the Network or by pressing the ESC key.}
 
-\item{manipulation}{: Just a Boolean or a list. See \link{visDocumentation}. You can also choose the columns to edit :
+\item{manipulation}{: Just a Boolean or a list. See \link{visDocumentation}. You can also choose the columns to edit : 
 \itemize{
  \item{"editEdgeCols"}{ : Optional. Default to NULL, and so you can just move edge. If set, you can't move edge but just edit.}
  \item{"editNodeCols"}{ : Optional. Default to c("id", "label"). See examples.}
@@ -88,8 +89,8 @@ nodes <- data.frame(id = 1:15, label = paste("Label", 1:15),
 
 edges <- data.frame(from = trunc(runif(15)*(15-1))+1,
  to = trunc(runif(15)*(15-1))+1)
-
-###################
+ 
+###################  
 # highlight nearest
 ###################
 
@@ -100,69 +101,69 @@ visNetwork(nodes, edges) \%>\% visOptions(highlightNearest = list(enabled = TRUE
 visNetwork(nodes, edges) \%>\% visOptions(highlightNearest = list(enabled = TRUE, hover = TRUE))
 
 # don't show nodes/edges
-visNetwork(nodes, edges) \%>\% visOptions(highlightNearest = list(enabled = TRUE,
+visNetwork(nodes, edges) \%>\% visOptions(highlightNearest = list(enabled = TRUE, 
  hover = TRUE, hideColor = 'rgba(200,200,200,0)'))
 
 # Using hierarchical information
 nodes = data.frame(id = 1:6, level = c(1, 2, 3, 3, 4, 2))
 edges = data.frame(from = c(1, 2, 2, 4, 6), to = c(2, 3, 4, 5, 4))
 
-visNetwork(nodes, edges) \%>\% visHierarchicalLayout() \%>\% visEdges(arrows = "to") \%>\%
+visNetwork(nodes, edges) \%>\% visHierarchicalLayout() \%>\% visEdges(arrows = "to") \%>\% 
  visOptions(highlightNearest = list(enabled = TRUE, algorithm = "hierarchical"))
-
-visNetwork(nodes, edges) \%>\% visHierarchicalLayout() \%>\% visEdges(arrows = "to") \%>\%
- visOptions(highlightNearest = list(enabled = TRUE, algorithm = "hierarchical",
+ 
+visNetwork(nodes, edges) \%>\% visHierarchicalLayout() \%>\% visEdges(arrows = "to") \%>\% 
+ visOptions(highlightNearest = list(enabled = TRUE, algorithm = "hierarchical", 
    degree = list(from = 0, to = 2)))
-
+   
 ##########################
 # nodesIdSelection
 ##########################
-
-visNetwork(nodes, edges) \%>\%
+ 
+visNetwork(nodes, edges) \%>\% 
  visOptions(highlightNearest = TRUE, nodesIdSelection = TRUE)
 
 # add a default selected node ?
-visNetwork(nodes, edges) \%>\%
- visOptions(highlightNearest = TRUE,
+visNetwork(nodes, edges) \%>\% 
+ visOptions(highlightNearest = TRUE, 
  nodesIdSelection = list(enabled = TRUE, selected = "1"))
-
+ 
 # subset on id values & don't use labels ?
-visNetwork(nodes, edges) \%>\%
- visOptions(highlightNearest = TRUE,
- nodesIdSelection = list(enabled = TRUE,
+visNetwork(nodes, edges) \%>\% 
+ visOptions(highlightNearest = TRUE, 
+ nodesIdSelection = list(enabled = TRUE, 
    selected = "2", values = c(2:10), useLabels = FALSE))
-
+ 
 # some style
-visNetwork(nodes, edges) \%>\%
- visOptions(highlightNearest = TRUE,
+visNetwork(nodes, edges) \%>\% 
+ visOptions(highlightNearest = TRUE, 
  nodesIdSelection = list(enabled = TRUE, style = 'width: 200px; height: 26px;
    background: #f8f8f8;
    color: darkblue;
    border:none;
-   outline:none;'))
-
+   outline:none;'))   
+ 
 ##########################
 # collapse
 ##########################
-
+ 
 nodes <- data.frame(id = 1:15, label = paste("Label", 1:15),
  group = sample(LETTERS[1:3], 15, replace = TRUE))
 
 edges <- data.frame(from = trunc(runif(15)*(15-1))+1,
  to = trunc(runif(15)*(15-1))+1)
-
-# keeping all parent node attributes
+ 
+# keeping all parent node attributes  
 visNetwork(nodes, edges) \%>\% visEdges(arrows = "to") \%>\%
  visOptions(collapse = TRUE)
 
-# setting some properties
+# setting some properties  
 visNetwork(nodes, edges) \%>\% visEdges(arrows = "to") \%>\%
- visOptions(collapse = list(enabled = TRUE, clusterOptions = list(shape = "square")))
-
-# enable / disable open cluster (proxy only) :
+ visOptions(collapse = list(enabled = TRUE, clusterOptions = list(shape = "square"))) 
+   
+# enable / disable open cluster (proxy only) : 
 # visEvents(type = "off", doubleClick = "networkOpenCluster")
-# visEvents(type = "on", doubleClick = "networkOpenCluster")
-
+# visEvents(type = "on", doubleClick = "networkOpenCluster")  
+ 
 ##########################
 # selectedBy
 ##########################
@@ -171,80 +172,80 @@ nodes <- data.frame(id = 1:15, label = paste("Label", 1:15),
 
 edges <- data.frame(from = trunc(runif(15)*(15-1))+1,
  to = trunc(runif(15)*(15-1))+1)
-
-visNetwork(nodes, edges) \%>\%
+ 
+visNetwork(nodes, edges) \%>\% 
  visOptions(selectedBy = "group")
-
+ 
 # add a default value ?
-visNetwork(nodes, edges) \%>\%
+visNetwork(nodes, edges) \%>\% 
  visOptions(selectedBy = list(variable = "group", selected = "A"))
 
 # subset on values ?
-visNetwork(nodes, edges) \%>\%
- visOptions(selectedBy = list(variable = "group",
+visNetwork(nodes, edges) \%>\% 
+ visOptions(selectedBy = list(variable = "group", 
    selected = "C",
    values = c("A", "C")))
-
+ 
 # highlight also
-visNetwork(nodes, edges) \%>\%
- visOptions(selectedBy = list(variable = "group",
-   highlight = TRUE), highlightNearest = TRUE)
-
+visNetwork(nodes, edges) \%>\% 
+ visOptions(selectedBy = list(variable = "group", 
+   highlight = TRUE), highlightNearest = TRUE) 
+     
 # add some style
-visNetwork(nodes, edges) \%>\%
+visNetwork(nodes, edges) \%>\% 
  visOptions(selectedBy = list(variable = "group", style = 'width: 200px; height: 26px;
    background: #f8f8f8;
    color: darkblue;
    border:none;
    outline:none;'))
-
+     
 # can also be on new column
 nodes$sample <- sample(c("sample 1", "sample 2"), nrow(nodes), replace = TRUE)
-visNetwork(nodes, edges) \%>\%
+visNetwork(nodes, edges) \%>\% 
  visOptions(selectedBy = "sample")
 
 # and with multiple groups ?
-nodes$group <- sample(c("group 1", "group 2", "group 1, group 2, group 3"),
+nodes$group <- sample(c("group 1", "group 2", "group 1, group 2, group 3"), 
  nrow(nodes), replace = TRUE)
-
-visNetwork(nodes, edges) \%>\%
+ 
+visNetwork(nodes, edges) \%>\% 
  visOptions(selectedBy = list(variable = "group", multiple = TRUE))
-
+ 
 ##########################
 # manipulation
 ##########################
-
-visNetwork(nodes, edges) \%>\%
+ 
+visNetwork(nodes, edges) \%>\% 
  visOptions(manipulation = TRUE)
 
-visNetwork(nodes, edges) \%>\%
+visNetwork(nodes, edges) \%>\% 
  visOptions(manipulation = list(enabled = TRUE, addNode = FALSE, addEdge = FALSE))
 
-visNetwork(nodes, edges) \%>\%
+visNetwork(nodes, edges) \%>\% 
  visOptions(manipulation = list(enabled = TRUE, deleteNode = FALSE, deleteEdge = FALSE))
 
-visNetwork(nodes, edges) \%>\%
+visNetwork(nodes, edges) \%>\% 
  visOptions(manipulation = list(enabled = TRUE, editNode = FALSE, editEdge = FALSE))
-
+ 
 # choose columns to edit
-visNetwork(nodes, edges) \%>\%
-  visOptions(manipulation = list(enabled = T,
-                                 editEdgeCols = c("label"),
-                                 editNodeCols = c("id", "label", "title", "size"),
+visNetwork(nodes, edges) \%>\% 
+  visOptions(manipulation = list(enabled = T, 
+                                 editEdgeCols = c("label"), 
+                                 editNodeCols = c("id", "label", "title", "size"), 
                                  addNodeCols = c("label", "group")))
 
 # choose columns to edit + input html type (text, number, ...)
 # https://www.w3schools.com/tags/att_input_type.asp
-visNetwork(nodes, edges) \%>\%
-  visOptions(manipulation = list(enabled = T,
-                                 editEdgeCols = c("label"),
+visNetwork(nodes, edges) \%>\% 
+  visOptions(manipulation = list(enabled = T, 
+                                 editEdgeCols = c("label"), 
                                  editNodeCols = list(
                                     "text" = c("id", "label", "title"),
                                     "number" = c("size")
-                                 ),
+                                 ), 
                                  addNodeCols = c("label", "group")))
-visNetwork(nodes, edges)  \%>\%
- visOptions(manipulation = list(enabled = TRUE,
+visNetwork(nodes, edges)  \%>\% 
+ visOptions(manipulation = list(enabled = TRUE, 
                                 editEdge = htmlwidgets::JS("function(data, callback) {
                                                            callback(data);
                                                            console.info('edit edge')
@@ -254,18 +255,18 @@ visNetwork(nodes, edges)  \%>\%
 ##########################
 # collapse
 ##########################
-visNetwork(nodes, edges) \%>\%
- visEdges(arrows = "to") \%>\%
- visOptions(collapse = list(enabled = TRUE,
+visNetwork(nodes, edges) \%>\% 
+ visEdges(arrows = "to") \%>\% 
+ visOptions(collapse = list(enabled = TRUE, 
    clusterOptions = list(shape = "square")))
-
+  
 }
 \references{
 See online documentation \url{http://datastorm-open.github.io/visNetwork/}
 }
 \seealso{
-\link{visNodes} for nodes options, \link{visEdges} for edges options, \link{visGroups} for groups options,
-\link{visLegend} for adding legend, \link{visOptions} for custom option, \link{visLayout} & \link{visHierarchicalLayout} for layout,
+\link{visNodes} for nodes options, \link{visEdges} for edges options, \link{visGroups} for groups options, 
+\link{visLegend} for adding legend, \link{visOptions} for custom option, \link{visLayout} & \link{visHierarchicalLayout} for layout, 
 \link{visPhysics} for control physics, \link{visInteraction} for interaction, \link{visNetworkProxy} & \link{visFocus} & \link{visFit} for animation within shiny,
 \link{visDocumentation}, \link{visEvents}, \link{visConfigure} ...
 }
