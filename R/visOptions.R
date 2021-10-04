@@ -562,7 +562,7 @@ visOptions <- function(graph,
         stop("Invalid 'jitter' argument. List can have 'coef', 'style', 'main'")
       }
       if("enabled"%in%names(jitter)){
-        jitterOptions$enabled <- dataViewer$enabled
+        jitterOptions$enabled <- jitter$enabled
       }else{
         jitterOptions$enabled <- TRUE
       }
@@ -575,7 +575,6 @@ visOptions <- function(graph,
       stop("Invalid 'jitter' argument")
     }
   
-    
     #############################
     # nodesIdSelection
     #############################
@@ -779,13 +778,13 @@ visOptions <- function(graph,
   }
   
   x <- list(
-    highlight = highlight, 
+    highlight   = highlight, 
     idselection = idselection,
     byselection = byselection, 
     ftselection = ftselection, 
-    dataviewer = dataviewer, 
-    jitter    = jitterOptions,
-    collapse = list_collapse
+    dataviewer  = dataviewer, 
+    jitter      = jitterOptions,
+    collapse    = list_collapse
   )
 
   if(highlight$hoverNearest){
@@ -803,6 +802,9 @@ visOptions <- function(graph,
     if(missing(nodesIdSelection)){
       x$idselection <- NULL
     }
+    if(missing(nodesFTSelection)){
+      x$ftselection <- NULL
+    }    
     if(missing(selectedBy)){
       x$byselection <- NULL
     }
