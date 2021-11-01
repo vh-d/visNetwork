@@ -3932,31 +3932,28 @@ HTMLWidgets.widget({
       }
     }
 
-    // shared click function (selectedNodes)
-    document.getElementById("graph"+el.id).myclick = function(params){
+    function onClickGeneric(params){
       if (ftQueryInput && ftQueryInput.value){ // full-text search activated
         if (el_id.dataviewer && params.nodes.length === 1 && instance.network.getSelectedNodes().includes(params.nodes[0])) {
-          dataViewerEl.scrollTop = document.getElementById("dataViewerNode-" + params.nodes[0]).offsetTop - dataViewerEl.offsetTop;
+          var dataViewerElItem = document.getElementById("dataViewerNode-" + params.nodes[0]);
+          dataViewerEl.scrollTop = dataViewerElItem.offsetTop - dataViewerEl.offsetTop;
+          dataViewerElItem.style.borderColor = "orange";
+          setTimeout(function() {
+            dataViewerElItem.style.borderColor = "rgba(200,200,200,0.8)";
+          },800)
         }
       } else if(el_id.highlight && x.nodes){
         neighbourhoodHighlight(params.nodes, "click", el_id.highlightAlgorithm, true);
       } else if((el_id.idselection || el_id.byselection) && x.nodes){
         onClickIDSelection(params)
       }
-    };
+    }
+
+    // shared click function (selectedNodes)
+    document.getElementById("graph"+el.id).myclick = onClickGeneric;
 
     // Set event in relation with highlightNearest
-    instance.network.on("click", function(params){
-      if (ftQueryInput && ftQueryInput.value){ // full-text search activated
-        if (el_id.dataviewer && params.nodes.length === 1 && instance.network.getSelectedNodes().includes(params.nodes[0])) {
-          dataViewerEl.scrollTop = document.getElementById("dataViewerNode-" + params.nodes[0]).offsetTop - dataViewerEl.offsetTop;
-        }
-      } else if(el_id.highlight && x.nodes){
-        neighbourhoodHighlight(params.nodes, "click", el_id.highlightAlgorithm, true);
-      } else if((el_id.idselection || el_id.byselection) && x.nodes){
-        onClickIDSelection(params)
-      }
-    });
+    instance.network.on("click", onClickGeneric);
     
     instance.network.on("selectNode", function(params){
       if (!(ftQueryInput && ftQueryInput.value)) {
@@ -4015,8 +4012,14 @@ HTMLWidgets.widget({
         // obtain node referenct
         ii = nodes._getItem(i);
 
+        var nodeContainer = document.createElement("div");
+        nodeContainer.setAttribute("id", "dataViewerNode-" + i);
+        nodeContainer.style.border = "2px";
+        nodeContainer.style.borderStyle = "solid";
+        nodeContainer.style.borderColor = 'rgba(200,200,200,0.8)';
+
         var nodeHeaderCont = document.createElement("div");
-        nodeHeaderCont.setAttribute("id", "dataViewerNode-" + i);
+        // nodeHeaderCont.setAttribute("id", "dataViewerNode-" + i);
 
         var nodeheader = document.createElement("figcaption");
         nodeheader.innerHTML = "".concat(i, " - ", ii["title"]);
@@ -4031,7 +4034,7 @@ HTMLWidgets.widget({
         nodeHeaderCont.style.borderTop = '1px';
         nodeHeaderCont.style.borderStyle = 'solid'; 
         nodeHeaderCont.style.borderColor = 'black';
-        dataViewerEl.appendChild(nodeHeaderCont);
+        nodeContainer.appendChild(nodeHeaderCont);
         // prepare elements
         // codeViewerPre = document.createElement("pre");
         // codeViewerCode = document.createElement("code");
@@ -4059,7 +4062,8 @@ HTMLWidgets.widget({
           content.childNodes.forEach(function(x) {if (x.tagName === "PRE") x.setAttribute("data-line", linesToHighlight)})
         }
         
-        dataViewerEl.appendChild(content);
+        nodeContainer.appendChild(content);
+        dataViewerEl.appendChild(nodeContainer);
         // codeViewerCode.setAttribute("class", "language-r");
         
         // codeViewerPre.appendChild(codeViewerCode);
