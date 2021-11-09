@@ -4094,7 +4094,7 @@ HTMLWidgets.widget({
 
     if (el_id.dataviewer) {
       
-      dataViewerCont.setAttribute('style', 'width: 35%; resize: both; background-color: inherit;');
+      dataViewerCont.setAttribute('style', 'width: 35%; min-width: 35%; resize: both; background-color: inherit;');
       dataViewerCont.style.height = el_id.style.height; // align with network height
 
       // set up dropdown selection menu
